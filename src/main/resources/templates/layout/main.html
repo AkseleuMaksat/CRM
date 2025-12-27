@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title th:text="${title} ?: 'CRM Система'">CRM Система</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM$+D2scQbITxI"
+            crossorigin="anonymous"></script>
+
+    <style>
+        .crm-nav {
+            background: #0b7a66;
+        }
+
+        .crm-card {
+            border-radius: 8px;
+        }
+
+        .crm-card small {
+            color: #6c757d;
+        }
+
+        .crm-title {
+            font-weight: 700;
+        }
+
+        .crm-new {
+            color: #d9534f;
+            font-weight: 700;
+        }
+
+        .crm-phone {
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark crm-nav">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/}">CRM Система</a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#crmNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="crmNav">
+            <ul class="navbar-nav ms-3 gap-lg-2">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/}">Все заявки</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/?view=new}">Новые заявки</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/?view=handled}">Обработанные заявки</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/create}">+ Добавить заявку</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<main>
+    <div class="container">
+        <div layout:fragment="akseleuFragment"></div>
+    </div>
+</main>
+<footer class="bg-dark text-light position-fixed bottom-0 w-100">
+    <div class="container-fluid">
+        <div class="row py-3">
+            <div class="col-12 text-center">
+                <span>Copyright &copy; All Rights Reserved</span>
+            </div>
+        </div>
+    </div>
+</footer>
+</body>
+</html>
