@@ -5,51 +5,52 @@
 <body>
 
 <div layout:fragment="akseleuFragment" class="mt-4">
-        <div class="row g-4">
-            <div class="col-md-6" th:each="a : ${CRM}"
-                 th:if="${param.view == null
+    <div class="row g-4">
+        <div class="col-md-6" th:each="a : ${CRM}"
+             th:if="${param.view == null
                 or (param.view[0] == 'new' and !a.handled)
                 or (param.view[0] == 'handled' and a.handled)}">
 
-                <div class="card crm-card shadow-sm">
-                    <div class="card-body">
-                        <div class="crm-title fs-5">
-                            <span class="crm-new" th:if="${!a.handled}">*(Новая)</span>
-                            <span th:if="${a.handled}" class="text-success fw-bold">*(Обработана)</span>
-                            <span class="ms-1">Заявка от</span>
-                            <span th:text="${a.user_name}">Имя</span>
-                        </div>
-
-                        <div class="mt-3">
-                            <small>Курс:</small>
-                            <span class="fw-semibold" th:text="${a.course_name}">Course</span>
-                        </div>
-
-                        <div class="mt-2" th:if="${a.commentary != null and !#strings.isEmpty(a.commentary)}">
-                            <span th:text="${a.commentary}">Комментарий</span>
-                        </div>
-
-                        <div class="mt-3 d-flex align-items-center gap-3">
-                            <div>
-                                <span class="crm-phone">Тел:</span>
-                                <span th:text="${a.phone}">+7...</span>
-                            </div>
-
-                            <a class="link-primary"
-                               th:href="@{/details/{id}(id=${a.id})}">
-                                Подробнее
-                            </a>
-                        </div>
-
+            <div class="card crm-card shadow-sm">
+                <div class="card-body">
+                    <div class="crm-title fs-5">
+                        <span class="crm-new" th:if="${!a.handled}">*(Новая)</span>
+                        <span th:if="${a.handled}" class="text-success fw-bold">*(Обработана)</span>
+                        <span class="ms-1">Заявка от</span>
+                        <span th:text="${a.user_name}">Имя</span>
                     </div>
+
+                    <div class="mt-3">
+                        <small>Курс:</small>
+                        <span class="fw-semibold"
+                              th:text="${a.course.name + ' — ' + a.course.price + ' ₸'}"></span>
+                    </div>
+
+                    <div class="mt-2" th:if="${a.commentary != null and !#strings.isEmpty(a.commentary)}">
+                        <span th:text="${a.commentary}">Комментарий</span>
+                    </div>
+
+                    <div class="mt-3 d-flex align-items-center gap-3">
+                        <div>
+                            <span class="crm-phone">Тел:</span>
+                            <span th:text="${a.phone}">+7...</span>
+                        </div>
+
+                        <a class="link-primary"
+                           th:href="@{/details/{id}(id=${a.id})}">
+                            Подробнее
+                        </a>
+                    </div>
+
                 </div>
-
             </div>
-        </div>
 
-        <div class="text-center text-muted mt-4" th:if="${#lists.isEmpty(CRM)}">
-            Пока заявок нет
         </div>
+    </div>
+
+    <div class="text-center text-muted mt-4" th:if="${#lists.isEmpty(CRM)}">
+        Пока заявок нет
+    </div>
 </div>
 </body>
 </html>

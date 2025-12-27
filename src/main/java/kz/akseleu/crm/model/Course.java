@@ -18,4 +18,10 @@ public class Course {
 
     @Column(nullable = false, unique = true)
     private String name;
+
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "price")
+    private int price;
 }

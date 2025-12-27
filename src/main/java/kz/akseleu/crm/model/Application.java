@@ -13,23 +13,21 @@ import lombok.*;
 public class Application {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column(name = "user_name", nullable = false)
-    String user_name;
+    private String user_name;
 
-    @Column(name = "course_id", nullable = false)
-    int course_id;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "course_id", nullable = false)
+    private Course course;
 
     @Column(name = "commentary")
-    String commentary;
+    private String commentary;
 
     @Column(name = "phone", nullable = false)
-    String phone;
+    private String phone;
 
     @Column(name = "handled")
-    boolean handled;
-
-    @Transient
-    private String course_name;
+    private boolean handled;
 }

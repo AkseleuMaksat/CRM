@@ -28,13 +28,8 @@
 
                 <div class="col-md-8">
                     <div class="text-muted small">Курс</div>
-                    <option value="" selected disabled>Выберите курс</option>
-                    <option th:each="c : ${courses}"
-                            th:value="${c.id}"
-                            th:text="${c.name}"
-                            th:selected="${c.id == app.course_id}">
-                    </option>
-                    </select>
+                    <div class="fs-5 fw-semibold"
+                         th:text="${app.course != null ? app.course.name + ' — ' + app.course.price + ' ₸' : '—'}"></div>
                 </div>
 
                 <div class="col-md-4">
@@ -102,11 +97,11 @@
                         <div class="mb-3">
                             <label class="form-label">Курс</label>
                             <select class="form-select" name="course_id" required>
-                                <option value="" selected disabled>Выберите курс</option>
+                                <option value="" disabled>Выберите курс</option>
                                 <option th:each="c : ${courses}"
                                         th:value="${c.id}"
-                                        th:text="${c.name}"
-                                        th:selected="${c.id == app.course_id}">
+                                        th:text="${c.name + ' — ' + c.price + ' ₸'}"
+                                        th:selected="${app.course != null and c.id == app.course.id}">
                                 </option>
                             </select>
                         </div>

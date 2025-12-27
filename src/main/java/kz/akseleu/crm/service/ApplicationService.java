@@ -1,6 +1,7 @@
 package kz.akseleu.crm.service;
 
 import kz.akseleu.crm.model.Application;
+import kz.akseleu.crm.model.Course;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,28 +19,18 @@ public class ApplicationService {
 
     public List<Application> getAllApplication() {
         String sql = """
-                    SELECT a.id, a.user_name, a.course_id, a.commentary, a.phone, a.handled,
-                           c.name AS course_name
+                    SELECT a.id, a.user_name, a.commentary, a.phone, a.handled,
+                           c.id AS course_id, c.name AS course_name, c.price AS course_price
                     FROM t_application a
-                    JOIN t_course c ON c.id = a.course_id
-                    ORDER BY a.id DESC
+                             JOIN t_course c ON c.id = a.course_id
                 """;
 
         try (PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet st = statement.executeQuery()) {
 
             List<Application> applications = new ArrayList<>();
-
             while (st.next()) {
-                Application a = new Application();
-                a.setId(st.getLong("id"));
-                a.setUser_name(st.getString("user_name"));
-                a.setCourse_id(st.getInt("course_id"));
-                a.setCourse_name(st.getString("course_name"));
-                a.setCommentary(st.getString("commentary"));
-                a.setPhone(st.getString("phone"));
-                a.setHandled(st.getBoolean("handled"));
-                applications.add(a);
+                applications.add(mapRow(st));
             }
             return applications;
 
@@ -48,10 +39,10 @@ public class ApplicationService {
         }
     }
 
-    public Application getApplicationById(Long id) {
+    public Application getById(Long id) {
         String sql = """
-                    SELECT a.id, a.user_name, a.course_id, a.commentary, a.phone, a.handled,
-                           c.name AS course_name
+                    SELECT a.id, a.user_name, a.commentary, a.phone, a.handled,
+                           c.id AS course_id, c.name AS course_name, c.price AS course_price
                     FROM t_application a
                     JOIN t_course c ON c.id = a.course_id
                     WHERE a.id = ?
@@ -62,23 +53,33 @@ public class ApplicationService {
 
             try (ResultSet st = statement.executeQuery()) {
                 if (!st.next()) return null;
-
-                Application a = new Application();
-                a.setId(st.getLong("id"));
-                a.setUser_name(st.getString("user_name"));
-                a.setCourse_id(st.getInt("course_id"));
-                a.setCourse_name(st.getString("course_name"));
-                a.setCommentary(st.getString("commentary"));
-                a.setPhone(st.getString("phone"));
-                a.setHandled(st.getBoolean("handled"));
-                return a;
+                return mapRow(st);
             }
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public boolean createApplication(Application application) {
+    // controller вызывает save() для create и update
+    public boolean save(Application application) {
+        if (application.getId() == null) {
+            return insert(application);
+        }
+        return update(application);
+    }
+
+    public void deleteById(Long id) {
+        String sql = "DELETE FROM t_application WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setLong(1, id);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean insert(Application application) {
         String sql = """
                     INSERT INTO t_application (user_name, course_id, commentary, phone, handled)
                     VALUES (?,?,?,?,?)
@@ -86,17 +87,18 @@ public class ApplicationService {
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, application.getUser_name());
-            statement.setInt(2, application.getCourse_id());
+            statement.setLong(2, application.getCourse().getId()); // <-- Course ID
             statement.setString(3, application.getCommentary());
             statement.setString(4, application.getPhone());
             statement.setBoolean(5, application.isHandled());
             return statement.executeUpdate() == 1;
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public boolean updateApplication(Application application) {
+    private boolean update(Application application) {
         String sql = """
                     UPDATE t_application SET
                     user_name = ?, course_id = ?, commentary = ?, phone = ?, handled = ?
@@ -105,24 +107,33 @@ public class ApplicationService {
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, application.getUser_name());
-            statement.setInt(2, application.getCourse_id());
+            statement.setLong(2, application.getCourse().getId()); // <-- Course ID
             statement.setString(3, application.getCommentary());
             statement.setString(4, application.getPhone());
             statement.setBoolean(5, application.isHandled());
             statement.setLong(6, application.getId());
             return statement.executeUpdate() == 1;
+
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public boolean deleteApplication(Long id) {
-        String sql = "DELETE FROM t_application WHERE id = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setLong(1, id);
-            return statement.executeUpdate() == 1;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    private Application mapRow(ResultSet st) throws SQLException {
+        Course course = new Course();
+        course.setId(st.getLong("course_id"));
+        course.setName(st.getString("course_name"));
+        course.setPrice(st.getInt("course_price"));
+
+
+        Application a = new Application();
+        a.setId(st.getLong("id"));
+        a.setUser_name(st.getString("user_name"));
+        a.setCommentary(st.getString("commentary"));
+        a.setPhone(st.getString("phone"));
+        a.setHandled(st.getBoolean("handled"));
+        a.setCourse(course); // <-- ВАЖНО: ставим объект Course
+
+        return a;
     }
 }

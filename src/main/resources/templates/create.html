@@ -18,7 +18,7 @@
                 <option value="" selected disabled>Выберите курс</option>
                 <option th:each="c : ${courses}"
                         th:value="${c.id}"
-                        th:text="${c.name}">
+                        th:text="${c.name + ' — ' + c.price + ' ₸'}">
                 </option>
             </select>
         </div>
